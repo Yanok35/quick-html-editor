@@ -372,7 +372,7 @@ class MenuExampleWindow(Gtk.Window):
 
     def on_webview_title_changed(self, webView, frame, title):
     	if len(title):
-            self.set_title ("%s - %s" % (MAINWIN_TITLE_DEFAULT, title))
+            self.set_title ("%s - %s" % (title, MAINWIN_TITLE_DEFAULT))
         else:
             self.set_title (MAINWIN_TITLE_DEFAULT)
 
