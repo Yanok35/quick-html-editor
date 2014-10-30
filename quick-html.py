@@ -152,6 +152,9 @@ class MenuExampleWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title=MAINWIN_TITLE_DEFAULT)
 
+	# Regular expression to add prefix for local file
+        self.repattern = re.compile("(?:href|src)[ \t\r\n]*=[ \t\r\n]*[\"'](.*)[\"']")
+
         self.set_default_size(200, 200)
 
         action_group = Gtk.ActionGroup("my_actions")
@@ -203,7 +206,7 @@ class MenuExampleWindow(Gtk.Window):
         self.webView.set_settings(websettings)
         self.webView.connect('title-changed', self.on_webview_title_changed)
 
-        self.webView.load_string(TEXT_DEFAULT, 'text/html', 'utf-8', 'file://')
+        self.webView.load_string(self.textbuf_get_content_parsed(), 'text/html', 'utf-8', 'file://')
         #self.webView.load_string(TEXT_DEFAULT, 'text/html', 'utf-8', 'file:///home/yannick/python/tst3/')
         #self.webView.load_html_string(TEXT_DEFAULT, 'file:///home/yannick/python/tst3/')
         #self.webView.load_uri('file:///home/yannick/python/tst3/doc.html')
@@ -230,9 +233,6 @@ class MenuExampleWindow(Gtk.Window):
         self.popup = uimanager.get_widget("/PopupMenu")
 
         self.add(box)
-
-	# Regular expression to add prefix for local file
-        self.repattern = re.compile("(?:href|src)[ \t\r\n]*=[ \t\r\n]*[\"'](.*)[\"']")
 
     def add_file_menu_actions(self, action_group):
         action_filemenu = Gtk.Action("FileMenu", "File", None, None)
@@ -305,8 +305,9 @@ class MenuExampleWindow(Gtk.Window):
     def on_menu_file_new_generic(self, widget):
         print("A File|New menu item was selected.")
         content = self.textbuf.get_property('text')
-        self.webView.load_string(content,  'text/html', 'utf-8', 'file://')
+        #print(content)
         self.webView.reload()
+        self.webView.load_string(content,  'text/html', 'utf-8', 'file://')
 
     def on_menu_file_print_preview(self, widget):
         # 
