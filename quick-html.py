@@ -333,7 +333,7 @@ class MenuExampleWindow(Gtk.Window):
             import subprocess
 
            ############################################################################ self.webView.get_html()
-            proc = subprocess.Popen(['/home/yannick/python/notebook/bin/weasyprint',
+            proc = subprocess.Popen(['weasyprint',
                                      '--base-url', '"file://"', '-', destfilename],
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
