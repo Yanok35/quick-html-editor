@@ -11,7 +11,7 @@ external tool named [Weasyprint](http://weasyprint.org/).
 Quick setup guide
 -----------------
 
-Follow this step to install the Quick HTML Editor on your machine.
+Follow these steps to install the Quick HTML Editor on your machine.
 
 1. First, prepare a Virtual Environment for python:
 
@@ -38,13 +38,12 @@ Running
 
 Simply launch :
 
-	```
-	cd quick-html-venv/
-	source ./bin/activate
-
-	cd quick-html-editor/
-	./quick-html.py
-	```
+```
+cd quick-html-venv/
+source ./bin/activate
+cd quick-html-editor/
+./quick-html.py
+```
 
 Dependency list
 ---------------
