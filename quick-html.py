@@ -304,9 +304,10 @@ class MenuExampleWindow(Gtk.Window):
 
     def on_menu_file_new_generic(self, widget):
         print("A File|New menu item was selected.")
-        content = self.textbuf.get_property('text')
-        #print(content)
-        self.webView.reload()
+        #content = self.textbuf.get_property('text')
+        content = self.textbuf_get_content_parsed()
+        print(content)
+        #self.webView.reload()
         self.webView.load_string(content,  'text/html', 'utf-8', 'file://')
 
     def on_menu_file_print_preview(self, widget):
