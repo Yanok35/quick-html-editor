@@ -2,6 +2,7 @@
 
 import os
 import re
+import signal
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
 
 UI_INFO = """
@@ -421,6 +422,8 @@ class MenuExampleWindow(Gtk.Window):
     #        return 0.0
 
 def main():
+	signal.signal(signal.SIGINT, signal_handler)
+
         # Use threads
         GLib.threads_init()
 
@@ -435,6 +438,11 @@ def main():
 	Gtk.main()
 
         #thread.join()
+
+def signal_handler(signal, frame):
+	#print('You pressed Ctrl+C!')
+	Gtk.main_quit()
+	#sys.exit(0)
 
 if __name__ == "__main__":
         main()
