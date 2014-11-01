@@ -1,5 +1,6 @@
 import os
 import re
+from lxml import etree
 #from gi.repository import GLib, Gtk, GtkSource
 from gi.repository import GtkSource
 from .htmldoc import *
@@ -27,15 +28,24 @@ class docbookdoc(htmldoc):
 	def __init__(self, mainwindow):
 		super(docbookdoc, self).__init__(mainwindow)
 
+		xsl_url_html = 'http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl'
+		self.xsldocbooktranform = etree.XSLT(etree.parse(xsl_url_html))
+
 	def get_content_parsed(self):
 		content = self.get_property('text')
 
-		import subprocess
+		parser = etree.XMLParser(recover=True)
+		try:
+			root = etree.XML(content, parser)
 
-		p = subprocess.Popen(["pandoc", "-f", "docbook", "-t", "html5"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-		(stdoutdata, stderrdata) = p.communicate(content)
+			consume_result = self.xsldocbooktranform(root)
+			out = etree.tostring(consume_result, pretty_print=True)
+			print (out)
+			return out
+		except:
+			print("exception")
 
-		return stdoutdata
+		return content
 
 	def new_file(self, filename):
 		self.begin_not_undoable_action()
