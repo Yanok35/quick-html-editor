@@ -4,7 +4,7 @@ import re
 from gi.repository import GtkSource
 
 class htmldoc(GtkSource.Buffer):
-	def __init__(self):
+	def __init__(self, mainwindow):
 		super(htmldoc, self).__init__()
 
 		# Regular expression to add prefix for local file
@@ -13,7 +13,11 @@ class htmldoc(GtkSource.Buffer):
 		lm = GtkSource.LanguageManager.new()
 	        language = lm.get_language('html')
 		self.set_language(language)
-	        self.set_highlight_syntax(True)
+		self.set_highlight_syntax(True)
+
+		self.connect('changed', self.on_textbuf_changed)
+
+		self.mainwindow = mainwindow
 
 	def _regexp_made_absolute_path(self, matchobj):
 		if len(matchobj.group(1)) == 0 or matchobj.group(1).find('://') != -1:
@@ -23,6 +27,11 @@ class htmldoc(GtkSource.Buffer):
 		else:
 			absolutepath = os.path.join(os.getcwd(), matchobj.group(1))
 		return matchobj.group(0).replace(matchobj.group(1), absolutepath)
+
+	def on_textbuf_changed(self, data):
+		content = self.get_content_parsed()
+		#print(content.decode('utf-8'))
+		self.mainwindow.webview_upgrade(content)
 
 	def get_content_parsed(self):
 		content = self.get_property('text')

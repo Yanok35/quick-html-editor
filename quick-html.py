@@ -184,9 +184,8 @@ class MenuExampleWindow(Gtk.Window):
         scrolled_textview.add(textview)
         #self.textbuf = textview.get_property('buffer')
 
-        self.textbuf = htmldoc()
+        self.textbuf = htmldoc(self)
         textview.set_buffer(self.textbuf)
-        self.textbuf.connect('changed', self.on_textbuf_changed)
         self.textbuf.set_text(TEXT_DEFAULT)
 
         self.webView = WebKit.WebView()
@@ -355,12 +354,8 @@ class MenuExampleWindow(Gtk.Window):
         else:
             self.set_title (MAINWIN_TITLE_DEFAULT)
 
-    def on_textbuf_changed(self, data):
-        content = self.textbuf.get_content_parsed()
-        #print(content.decode('utf-8'))
-
-        #GLib.idle_add(self.webView.load_string, content, 'text/html', 'utf-8', '/')
-        self.webView.load_string(content,  'text/html', 'utf-8', 'file://')
+    def webview_upgrade(self, htmlstr):
+        self.webView.load_string(htmlstr,  'text/html', 'utf-8', 'file://')
 
     def on_vadjust_changed(self, data):
         # After redrawed, webkit widget go down to 0, and vadjust is returning to top.
