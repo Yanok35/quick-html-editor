@@ -5,6 +5,7 @@ import signal
 from optparse import OptionParser
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
 from libqhe.htmldoc import *
+#from libqhe.docbookdoc import *
 
 UI_INFO = """
 <ui>
@@ -93,6 +94,7 @@ class MenuExampleWindow(Gtk.Window):
         #self.textbuf = textview.get_property('buffer')
 
         self.textbuf = htmldoc(self)
+        #self.textbuf = docbookdoc(self)
         textview.set_buffer(self.textbuf)
 
         self.webView = WebKit.WebView()
