@@ -2,6 +2,7 @@
 
 import os
 import signal
+from optparse import OptionParser
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
 from libqhe.htmldoc import *
 
@@ -149,6 +150,8 @@ _TEXT_DEFAULT="""<!DOCTYPE html>
 </html>
 """
 
+APP_VERSION_MAJOR=0
+APP_VERSION_MINOR=1
 MAINWIN_TITLE_DEFAULT="Quick Html Editor"
 
 class MenuExampleWindow(Gtk.Window):
@@ -401,6 +404,17 @@ class MenuExampleWindow(Gtk.Window):
     #        return 0.0
 
 def main():
+	parser = OptionParser(version=MAINWIN_TITLE_DEFAULT + " - v%d.%d" % (APP_VERSION_MAJOR, APP_VERSION_MINOR))
+	(options, args) = parser.parse_args()
+
+	if (len(args) > 0):
+		filename = args[0]
+	else:
+		filename = None
+
+	print (options, args)
+	#os._exit(0)
+
 	signal.signal(signal.SIGINT, signal_handler)
 
         # Use threads
