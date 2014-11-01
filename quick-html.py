@@ -9,12 +9,8 @@ from libqhe.htmldoc import *
 UI_INFO = """
 <ui>
   <menubar name='MenuBar'>
-    <menu action='FileMenu'>
-      <menu action='FileNew'>
-        <menuitem action='FileNewStandard' />
-        <menuitem action='FileNewFoo' />
-        <menuitem action='FileNewGoo' />
-      </menu>
+    <menu action='DocumentMenu'>
+      <menuitem action='DocumentNew' />
       <menuitem action='FilePrint' />
       <separator />
       <menuitem action='FileQuit' />
@@ -32,7 +28,7 @@ UI_INFO = """
     </menu>
   </menubar>
   <toolbar name='ToolBar'>
-    <toolitem action='FileNewStandard' />
+    <toolitem action='DocumentNew' />
     <toolitem action='FilePrintPreview' />
     <toolitem action='FilePrint' />
     <toolitem action='FileQuit' />
@@ -232,23 +228,13 @@ class MenuExampleWindow(Gtk.Window):
         self.add(box)
 
     def add_file_menu_actions(self, action_group):
-        action_filemenu = Gtk.Action("FileMenu", "File", None, None)
-        action_group.add_action(action_filemenu)
+        action_documentmenu = Gtk.Action("DocumentMenu", "Document", None, None)
+        action_group.add_action(action_documentmenu)
 
-        action_filenewmenu = Gtk.Action("FileNew", None, None, Gtk.STOCK_NEW)
-        action_group.add_action(action_filenewmenu)
-
-        action_new = Gtk.Action("FileNewStandard", "_New",
-            "Create a new file", Gtk.STOCK_NEW)
-        action_new.connect("activate", self.on_menu_file_new_generic)
+        action_new = Gtk.Action("DocumentNew", "_New",
+            "Create a new document", Gtk.STOCK_NEW)
+        action_new.connect("activate", self.on_menu_document_new)
         action_group.add_action_with_accel(action_new, None)
-
-        action_group.add_actions([
-            ("FileNewFoo", None, "New Foo", None, "Create new foo",
-             self.on_menu_file_new_generic),
-            ("FileNewGoo", None, "_New Goo", None, "Create new goo",
-             self.on_menu_file_new_generic),
-        ])
 
         action_fileprintpreview = Gtk.Action("FilePrintPreview", None, None, Gtk.STOCK_PRINT_PREVIEW)
         action_fileprintpreview.connect("activate", self.on_menu_file_print_preview)
@@ -299,7 +285,7 @@ class MenuExampleWindow(Gtk.Window):
         self.add_accel_group(accelgroup)
         return uimanager
 
-    def on_menu_file_new_generic(self, widget):
+    def on_menu_document_new(self, widget):
         print("A File|New menu item was selected.")
         #content = self.textbuf.get_property('text')
         content = self.textbuf_get_content_parsed()
