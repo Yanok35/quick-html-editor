@@ -4,6 +4,7 @@ import os
 import re
 import signal
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
+from libqhe.htmldoc import *
 
 UI_INFO = """
 <ui>
@@ -191,12 +192,7 @@ class MenuExampleWindow(Gtk.Window):
         scrolled_textview.add(textview)
         #self.textbuf = textview.get_property('buffer')
 
-        lm = GtkSource.LanguageManager.new()
-        #language = lm.get_language_ids() # list all language
-        language = lm.get_language('html') # list all language
-        self.textbuf = GtkSource.Buffer.new_with_language(language)
-        #self.textbuf = GtkSource.Buffer.new()
-        self.textbuf.set_highlight_syntax(True)
+        self.textbuf = htmldoc()
         textview.set_buffer(self.textbuf)
         self.textbuf.connect('changed', self.on_textbuf_changed)
         self.textbuf.set_text(TEXT_DEFAULT)
