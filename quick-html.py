@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import re
 import signal
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
 from libqhe.htmldoc import *
@@ -150,9 +149,6 @@ class MenuExampleWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title=MAINWIN_TITLE_DEFAULT)
 
-	# Regular expression to add prefix for local file
-        self.repattern = re.compile("(?:href|src)[ \t\r\n]*=[ \t\r\n]*[\"'](.*)[\"']")
-
         self.set_default_size(200, 200)
 
         action_group = Gtk.ActionGroup("my_actions")
@@ -199,7 +195,7 @@ class MenuExampleWindow(Gtk.Window):
         self.webView.set_settings(websettings)
         self.webView.connect('title-changed', self.on_webview_title_changed)
 
-        self.webView.load_string(self.textbuf_get_content_parsed(), 'text/html', 'utf-8', 'file://')
+        self.webView.load_string(self.textbuf.get_content_parsed(), 'text/html', 'utf-8', 'file://')
         #self.webView.load_string(TEXT_DEFAULT, 'text/html', 'utf-8', 'file:///home/yannick/python/tst3/')
         #self.webView.load_html_string(TEXT_DEFAULT, 'file:///home/yannick/python/tst3/')
         #self.webView.load_uri('file:///home/yannick/python/tst3/doc.html')
@@ -288,7 +284,7 @@ class MenuExampleWindow(Gtk.Window):
     def on_menu_document_new(self, widget):
         print("A File|New menu item was selected.")
         #content = self.textbuf.get_property('text')
-        content = self.textbuf_get_content_parsed()
+        content = self.textbuf.get_content_parsed()
         print(content)
         #self.webView.reload()
         self.webView.load_string(content,  'text/html', 'utf-8', 'file://')
@@ -324,7 +320,7 @@ class MenuExampleWindow(Gtk.Window):
                             stdout=subprocess.PIPE,
                             )
 
-            content = self.textbuf_get_content_parsed()
+            content = self.textbuf.get_content_parsed()
             proc.stdin.write(content)
             proc.stdin.close()
             proc.wait()
@@ -359,28 +355,8 @@ class MenuExampleWindow(Gtk.Window):
         else:
             self.set_title (MAINWIN_TITLE_DEFAULT)
 
-    def regexp_made_absolute_path(self, matchobj):
-        if len(matchobj.group(1)) == 0 or matchobj.group(1).find('://') != -1:
-            return matchobj.group(0)
-        elif len(matchobj.group(1)) and matchobj.group(1)[0] == '#':
-            return matchobj.group(0)
-        else:
-            absolutepath = os.path.join(os.getcwd(), matchobj.group(1))
-            return matchobj.group(0).replace(matchobj.group(1), absolutepath)
-
-    def textbuf_get_content_parsed(self):
-        content = self.textbuf.get_property('text')
-
-        # If localfile referenced in 'href' and 'src' attribute, add prefix:
-        filepath_to_check = self.repattern.search(content)
-        if filepath_to_check:
-            content = self.repattern.sub(self.regexp_made_absolute_path, content)
-
-        #print(content)
-        return content
-
     def on_textbuf_changed(self, data):
-        content = self.textbuf_get_content_parsed()
+        content = self.textbuf.get_content_parsed()
         #print(content.decode('utf-8'))
 
         #GLib.idle_add(self.webView.load_string, content, 'text/html', 'utf-8', '/')
