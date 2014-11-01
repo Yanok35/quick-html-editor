@@ -48,108 +48,6 @@ UI_INFO = """
 </ui>
 """
 
-__TEXT_DEFAULT="""<!DOCTYPE html>
-<html>
- <head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="a4.css">
-  <title>Document Title</title>
-  <style TYPE="text/css">
-    body {
-     background: #e8eeee;
-     color: #80c0c0 }
-    h1, h2 { color: #800000; }
-  </style>
- </head>
- <body>
-  <page size="A4">
-  <h2>Hello World !</h2>
-  </page>
- </body>
-</html>
-"""
-
-TEXT_DEFAULT="""<!DOCTYPE html>
-<html>
- <head>
-  <meta charset="utf-8" />
-  <title>Document Title</title>
-  <style TYPE="text/css">
-    body {
-      background: rgb(204,204,204); 
-      text-align: justify;
-    }
-    page[size="A4"] {
-      background: white;
-      width: 21cm;
-      height: 29.7cm;
-      display: block;
-      margin: 0 auto;
-      margin-bottom: 16px;
-      box-shadow: 0px 0px 8px 2px rgba(0,0,0,0.5);
-    }
-    h1 {
-      //margin-left: 5cm;
-      text-align: center;
-    }
-    @page { size: A4; margin: 0cm }
-    @media print {
-      body, page[size="A4"] {
-        background: none;
-        margin: 0 0 0 0;
-        margin-top: 0cm;
-        margin-left: 0cm;
-        margin-right: 0cm;
-        margin-bottom: 0cm;
-        border: 0cm;
-        box-shadow: 0 0 0 0;
-      }
-    }
-  </style>
- </head>
- <body>
-  <page size="A4">
-  <title> This is the title </title>
-  <h2>Hello World !</h2>
-  <center><img src='samples/fig1.png' /></center>
-  </page>
-  <page size="A4">
-  <h2>page 2</h2>
-  </page>
- </body>
-</html>
-"""
-
-_TEXT_DEFAULT="""<!DOCTYPE html>
-<html>
- <head>
-  <meta charset="utf-8" />
-  <title>Document Title</title>
-  <style TYPE="text/css">
-    body {
-      background: white; 
-      text-align: justify;
-    }
-    h1 {
-      //margin-left: 5cm;
-      text-align: center;
-    }
-    @page { size: A4; margin: 0cm }
-  </style>
- </head>
- <body>
-  <page size="A4">
-  <title> This is the title </title>
-  <h2>Hello World !</h2>
-  <center><img src='fig1.png' /></center>
-  </page>
-  <page size="A4">
-  <h2>page 2</h2>
-  </page>
- </body>
-</html>
-"""
-
 APP_VERSION_MAJOR=0
 APP_VERSION_MINOR=1
 MAINWIN_TITLE_DEFAULT="Quick Html Editor"
@@ -196,7 +94,6 @@ class MenuExampleWindow(Gtk.Window):
 
         self.textbuf = htmldoc(self)
         textview.set_buffer(self.textbuf)
-        self.textbuf.set_text(TEXT_DEFAULT)
 
         self.webView = WebKit.WebView()
         websettings = self.webView.get_settings()
@@ -305,14 +202,20 @@ class MenuExampleWindow(Gtk.Window):
         self.add_accel_group(accelgroup)
         return uimanager
 
+    def set_current_doc(self, filename):
+        if filename and os.path.exists(filename):
+            self.textbuf.open_file(filename)
+        else:
+            self.textbuf.new_file(filename)
+
     def on_menu_document_new(self, widget):
-        print("A File|New menu item was selected.")
+        self.textbuf.new_file(None)
 
     def on_menu_document_open(self, widget):
         print("A File|Open menu item was selected.")
 
     def on_menu_document_save(self, widget):
-        print("A File|Save menu item was selected.")
+        self.textbuf.save_file()
 
     def on_menu_document_close(self, widget):
         print("A File|Close menu item was selected.")
@@ -420,7 +323,8 @@ def main():
         # Use threads
         GLib.threads_init()
 
-	window = MenuExampleWindow()     
+	window = MenuExampleWindow()
+	window.set_current_doc(filename)
 	window.resize(1400, 500)
 	window.connect("delete-event", Gtk.main_quit)
 	window.show_all()

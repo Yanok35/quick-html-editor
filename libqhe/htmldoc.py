@@ -3,6 +3,57 @@ import re
 #from gi.repository import GLib, Gtk, GtkSource
 from gi.repository import GtkSource
 
+TEXT_DEFAULT="""<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <title>Document Title</title>
+  <style TYPE="text/css">
+    body {
+      background: rgb(204,204,204);
+      text-align: justify;
+    }
+    page[size="A4"] {
+      background: white;
+      width: 21cm;
+      height: 29.7cm;
+      display: block;
+      margin: 0 auto;
+      margin-bottom: 16px;
+      box-shadow: 0px 0px 8px 2px rgba(0,0,0,0.5);
+    }
+    h1 {
+      //margin-left: 5cm;
+      text-align: center;
+    }
+    @page { size: A4; margin: 0cm }
+    @media print {
+      body, page[size="A4"] {
+        background: none;
+        margin: 0 0 0 0;
+        margin-top: 0cm;
+        margin-left: 0cm;
+        margin-right: 0cm;
+        margin-bottom: 0cm;
+        border: 0cm;
+        box-shadow: 0 0 0 0;
+      }
+    }
+  </style>
+ </head>
+ <body>
+  <page size="A4">
+  <title> This is the title </title>
+  <h2>Hello World !</h2>
+  <center><img src='samples/fig1.png' /></center>
+  </page>
+  <page size="A4">
+  <h2>page 2</h2>
+  </page>
+ </body>
+</html>
+"""
+
 class htmldoc(GtkSource.Buffer):
 	def __init__(self, mainwindow):
 		super(htmldoc, self).__init__()
@@ -18,6 +69,8 @@ class htmldoc(GtkSource.Buffer):
 		self.connect('changed', self.on_textbuf_changed)
 
 		self.mainwindow = mainwindow
+
+	        self.filename = None
 
 	def _regexp_made_absolute_path(self, matchobj):
 		if len(matchobj.group(1)) == 0 or matchobj.group(1).find('://') != -1:
@@ -47,4 +100,43 @@ class htmldoc(GtkSource.Buffer):
 	def get_content(self):
 		return self.get_property('text')
 
+	def set_filename(self, filename):
+		self.filename = filename
+
+	def get_filename(self):
+		return self.filename
+
+	def new_file(self, filename):
+		self.begin_not_undoable_action()
+		self.set_text(TEXT_DEFAULT)
+		self.end_not_undoable_action()
+
+		self.filename = filename
+
+	def open_file(self, filename):
+		if not (filename and os.path.exists(filename)):
+			print ("file does not exists")
+			return
+
+		self.begin_not_undoable_action()
+		f = open(filename, 'r')
+		self.set_text(f.read())
+		self.end_not_undoable_action()
+		f.close()
+
+		self.filename = filename
+
+	def save_file(self):
+		if not self.filename:
+			print ("filename not set")
+			return
+
+		if not os.path.exists(self.filename) or self.can_undo():
+			f = open(self.filename, 'w')
+			f.write(self.get_property('text'))
+			f.close()
+
+			self.set_undo_manager(None)
+		#else:
+		#	print ("no change detected")
 
