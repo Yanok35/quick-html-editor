@@ -10,15 +10,18 @@ UI_INFO = """
   <menubar name='MenuBar'>
     <menu action='DocumentMenu'>
       <menuitem action='DocumentNew' />
+      <menuitem action='DocumentOpen' />
+      <menuitem action='DocumentSave' />
+      <menuitem action='DocumentClose' />
       <menuitem action='FilePrint' />
       <separator />
       <menuitem action='FileQuit' />
     </menu>
-    <menu action='EditMenu'>
+    <!--menu action='EditMenu'>
       <menuitem action='EditCopy' />
       <menuitem action='EditPaste' />
       <menuitem action='EditSomething' />
-    </menu>
+    </menu-->
     <menu action='ChoicesMenu'>
       <menuitem action='ChoiceOne'/>
       <menuitem action='ChoiceTwo'/>
@@ -28,6 +31,10 @@ UI_INFO = """
   </menubar>
   <toolbar name='ToolBar'>
     <toolitem action='DocumentNew' />
+    <toolitem action='DocumentOpen' />
+    <toolitem action='DocumentSave' />
+    <toolitem action='DocumentClose' />
+    <separator />
     <toolitem action='FilePrintPreview' />
     <toolitem action='FilePrint' />
     <toolitem action='FileQuit' />
@@ -231,6 +238,21 @@ class MenuExampleWindow(Gtk.Window):
         action_new.connect("activate", self.on_menu_document_new)
         action_group.add_action_with_accel(action_new, None)
 
+        action_new = Gtk.Action("DocumentOpen", "_Open",
+            "Open an existing document", Gtk.STOCK_OPEN)
+        action_new.connect("activate", self.on_menu_document_open)
+        action_group.add_action_with_accel(action_new, None)
+
+        action_new = Gtk.Action("DocumentSave", "_Save",
+            "Save the current document", Gtk.STOCK_SAVE)
+        action_new.connect("activate", self.on_menu_document_save)
+        action_group.add_action_with_accel(action_new, None)
+
+        action_new = Gtk.Action("DocumentClose", "_Close",
+            "Close the current document", Gtk.STOCK_CLOSE)
+        action_new.connect("activate", self.on_menu_document_close)
+        action_group.add_action_with_accel(action_new, None)
+
         action_fileprintpreview = Gtk.Action("FilePrintPreview", None, None, Gtk.STOCK_PRINT_PREVIEW)
         action_fileprintpreview.connect("activate", self.on_menu_file_print_preview)
         action_group.add_action_with_accel(action_fileprintpreview, None)
@@ -282,11 +304,15 @@ class MenuExampleWindow(Gtk.Window):
 
     def on_menu_document_new(self, widget):
         print("A File|New menu item was selected.")
-        #content = self.textbuf.get_property('text')
-        content = self.textbuf.get_content_parsed()
-        print(content)
-        #self.webView.reload()
-        self.webView.load_string(content,  'text/html', 'utf-8', 'file://')
+
+    def on_menu_document_open(self, widget):
+        print("A File|Open menu item was selected.")
+
+    def on_menu_document_save(self, widget):
+        print("A File|Save menu item was selected.")
+
+    def on_menu_document_close(self, widget):
+        print("A File|Close menu item was selected.")
 
     def on_menu_file_print_preview(self, widget):
         # 
