@@ -38,15 +38,18 @@ class docbookdoc(htmldoc):
 
 		self.xsldocbooktranform = etree.XSLT(etree.parse(xsl_url_html))
 
-	def get_content_parsed(self):
-		content = self.get_property('text')
+	def get_content_parsed(self, content=None):
+		if not content:
+			content = self.get_property('text')
 
 		parser = etree.XMLParser(recover=True)
 		try:
+			#root = etree.XML(content, parser, base_url='file://' + os.getcwd())
 			root = etree.XML(content, parser)
 
 			consume_result = self.xsldocbooktranform(root)
 			out = etree.tostring(consume_result, pretty_print=True)
+			out = super(docbookdoc, self).get_content_parsed(content=out)
 			print (out)
 			return out
 		except:

@@ -86,8 +86,9 @@ class htmldoc(GtkSource.Buffer):
 		#print(content.decode('utf-8'))
 		self.mainwindow.webview_upgrade(content)
 
-	def get_content_parsed(self):
-		content = self.get_property('text')
+	def get_content_parsed(self, content=None):
+		if not content:
+			content = self.get_property('text')
 
 		# If localfile referenced in 'href' and 'src' attribute, add prefix:
 		filepath_to_check = self.repattern.search(content)
