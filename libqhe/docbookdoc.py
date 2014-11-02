@@ -32,7 +32,10 @@ class docbookdoc(htmldoc):
 	def __init__(self, mainwindow):
 		super(docbookdoc, self).__init__(mainwindow)
 
-		xsl_url_html = 'http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl'
+		xsl_url_html = "/usr/share/xml/docbook/stylesheet/docbook-xsl/html/docbook.xsl"
+		if not os.path.exists(xsl_url_html):
+			xsl_url_html = 'http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl'
+
 		self.xsldocbooktranform = etree.XSLT(etree.parse(xsl_url_html))
 
 	def get_content_parsed(self):
