@@ -5,7 +5,7 @@ import signal
 from optparse import OptionParser
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
 from libqhe.htmldoc import *
-#from libqhe.docbookdoc import *
+from libqhe.docbookdoc import *
 
 UI_INFO = """
 <ui>
@@ -96,6 +96,7 @@ class MenuExampleWindow(Gtk.Window):
         self.textbuf = htmldoc(self)
         #self.textbuf = docbookdoc(self)
         textview.set_buffer(self.textbuf)
+        self.textview = textview
 
         self.webView = WebKit.WebView()
         websettings = self.webView.get_settings()
@@ -206,6 +207,12 @@ class MenuExampleWindow(Gtk.Window):
 
     def set_current_doc(self, filename):
         if filename and os.path.exists(filename):
+            (f, ext) = os.path.splitext(filename)
+            if ext == '.docbook' or ext == '.xml':
+                self.textbuf = docbookdoc(self)
+            else:
+                self.textbuf = htmldoc(self)
+            self.textview.set_buffer(self.textbuf)
             self.textbuf.open_file(filename)
         else:
             self.textbuf.new_file(filename)
