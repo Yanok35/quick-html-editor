@@ -283,10 +283,15 @@ class MenuExampleWindow(Gtk.Window):
             return True # event has been handled
 
     def on_webview_title_changed(self, webView, frame, title):
+        filename = self.textbuf.get_filename()
+        if not filename:
+            filename = '*scratch*'
+        wintitle = '[%s]' % filename
+        wintitle = "%s %s" % (MAINWIN_TITLE_DEFAULT, wintitle)
     	if len(title):
-            self.set_title ("%s - %s" % (title, MAINWIN_TITLE_DEFAULT))
-        else:
-            self.set_title (MAINWIN_TITLE_DEFAULT)
+            wintitle = "%s - %s" % (title, wintitle)
+
+        self.set_title(wintitle)
 
     def webview_upgrade(self, htmlstr):
         self.webView.load_string(htmlstr,  'text/html', 'utf-8', 'file://')
