@@ -1,7 +1,8 @@
 import os
 import re
-#from gi.repository import GLib, Gtk, GtkSource
-from gi.repository import GtkSource
+import threading
+import time
+from gi.repository import GtkSource, GObject
 
 TEXT_DEFAULT="""<!DOCTYPE html>
 <html>
@@ -54,7 +55,18 @@ TEXT_DEFAULT="""<!DOCTYPE html>
 </html>
 """
 
+def idle_add_decorator(func):
+	def callback(*args):
+		GObject.idle_add(func, *args)
+	return callback
+
 class htmldoc(GtkSource.Buffer):
+	"""
+	This need to be class member, don't the reason in Threading
+	implementation.
+	"""
+	thr_convert_stopevent = threading.Event()
+
 	def __init__(self, mainwindow):
 		super(htmldoc, self).__init__()
 
@@ -72,6 +84,15 @@ class htmldoc(GtkSource.Buffer):
 
 	        self.filename = None
 
+	        self.thr_convert_inputbuf = None
+	        self.thr_convert_counter = 0
+	        self.thr_convert = threading.Thread(target=self.thr_convert_main)
+	        self.thr_convert.start()
+
+	def __del__(self):
+		self.thr_convert_stopevent.set()
+		self.thr_convert.join()
+
 	def _regexp_made_absolute_path(self, matchobj):
 		if len(matchobj.group(1)) == 0 or matchobj.group(1).find('://') != -1:
 			return matchobj.group(0)
@@ -82,8 +103,22 @@ class htmldoc(GtkSource.Buffer):
 		return matchobj.group(0).replace(matchobj.group(1), absolutepath)
 
 	def on_textbuf_changed(self, data):
-		content = self.get_content_parsed()
-		#print(content.decode('utf-8'))
+		content = self.get_property('text')
+		self.thr_convert_inputbuf = content
+		self.thr_convert_counter += 1
+
+	def thr_convert_main(self):
+		while not self.thr_convert_stopevent.is_set():
+			if self.thr_convert_counter == 0:
+				time.sleep(0.1) # 100ms
+				continue
+			self.thr_convert_counter = 0
+			outbuf = self.get_content_parsed(self.thr_convert_inputbuf)
+			if True: #if self.thr_convert_counter == 0:
+				self.idle_upgrade_webview(outbuf)
+
+	@idle_add_decorator
+	def idle_upgrade_webview(self, content):
 		self.mainwindow.webview_upgrade(content)
 
 	def get_content_parsed(self, content=None):

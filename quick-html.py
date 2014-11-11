@@ -132,6 +132,11 @@ class MenuExampleWindow(Gtk.Window):
 
         self.add(box)
 
+        self.connect('destroy', self.on_destroy)
+
+    def on_destroy(self, data):
+        self.textbuf.__del__()
+
     def add_file_menu_actions(self, action_group):
         action_documentmenu = Gtk.Action("DocumentMenu", "Document", None, None)
         action_group.add_action(action_documentmenu)
@@ -336,6 +341,7 @@ def main():
 
         # Use threads
         GLib.threads_init()
+        Gdk.threads_init()
 
 	window = MenuExampleWindow()
 	window.set_current_doc(filename)
@@ -346,7 +352,9 @@ def main():
         #thread = threading.Thread(target=app.thr_main)
         #thread.start()
 
+	Gdk.threads_init()
 	Gtk.main()
+	Gdk.threads_leave()
 
         #thread.join()
 
