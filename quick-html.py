@@ -4,6 +4,7 @@ import os
 import signal
 from optparse import OptionParser
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
+from libqhe.editorview import *
 from libqhe.htmldoc import *
 from libqhe.docbookdoc import *
 
@@ -83,20 +84,8 @@ class MenuExampleWindow(Gtk.Window):
         ###vbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         ###vbox.pack_start
 
-        #textview = Gtk.TextView()
-        textview = GtkSource.View.new()
-        textview.set_show_line_numbers(True)
-        textview.set_highlight_current_line(True)
-        fontdesc = Pango.FontDescription("Monospace 11")
-        textview.modify_font(fontdesc)
-        scrolled_textview = Gtk.ScrolledWindow()
-        scrolled_textview.add(textview)
-        #self.textbuf = textview.get_property('buffer')
-
         self.textbuf = htmldoc(self)
-        #self.textbuf = docbookdoc(self)
-        textview.set_buffer(self.textbuf)
-        self.textview = textview
+        self.editorview = editorview(self.textbuf)
 
         self.webView = WebKit.WebView()
         websettings = self.webView.get_settings()
@@ -104,7 +93,7 @@ class MenuExampleWindow(Gtk.Window):
         self.webView.set_settings(websettings)
         self.webView.connect('title-changed', self.on_webview_title_changed)
 
-        self.webView.load_string(self.textbuf.get_content_parsed(), 'text/html', 'utf-8', 'file://')
+        #self.webView.load_string(self.textbuf.get_content_parsed(), 'text/html', 'utf-8', 'file://')
         #self.webView.load_string(TEXT_DEFAULT, 'text/html', 'utf-8', 'file:///home/yannick/python/tst3/')
         #self.webView.load_html_string(TEXT_DEFAULT, 'file:///home/yannick/python/tst3/')
         #self.webView.load_uri('file:///home/yannick/python/tst3/doc.html')
@@ -117,12 +106,10 @@ class MenuExampleWindow(Gtk.Window):
         self.vadjust.connect('changed', self.on_vadjust_changed)
 
         paned = Gtk.Paned()
-        paned.pack1(scrolled_textview)
+        paned.pack1(self.editorview)
         paned.pack2(scrolled_preview)
-        paned.set_position(1400/2)
+        paned.set_position(500)
 
-        self.scrolled_textview = scrolled_textview
-        self.scrolled_preview = scrolled_preview
         box.pack_start(paned, True, True, 0)
 
         #label = Gtk.Label("Right-click to see the popup menu.")
@@ -217,7 +204,7 @@ class MenuExampleWindow(Gtk.Window):
                 self.textbuf = docbookdoc(self)
             else:
                 self.textbuf = htmldoc(self)
-            self.textview.set_buffer(self.textbuf)
+            self.editorview.set_buffer(self.textbuf)
             self.textbuf.open_file(filename)
         else:
             self.textbuf.new_file(filename)
