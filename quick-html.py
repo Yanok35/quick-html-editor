@@ -257,7 +257,7 @@ class MenuExampleWindow(Gtk.Window):
             proc.stdin.close()
             proc.wait()
 
-        os.system("evince %s" % destfilename)
+        #os.system("evince %s" % destfilename)
         
 
     def on_menu_file_quit(self, widget):
