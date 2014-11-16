@@ -4,9 +4,10 @@ quick-html-editor
 Overview
 --------
 
-This tool aim to be a WYSIWYG Html editor. It's a simple binding between an
-GtkSourceView editor and a Webkit renderer. PDF generation is linked to an
-external tool named [Weasyprint](http://weasyprint.org/).
+This tool aim to be a WYSIWYG Html editor to render PDF. It's a simple binding
+between an GtkSourceView editor, a web renderer and an Evince previewer.
+PDF generation is linked to an external tool named [Weasyprint](http://weasyprint.org/)
+but other tools such as [Prince](http://www.princexml.com/) can be used as well.
 
 Quick setup guide
 -----------------
@@ -49,7 +50,6 @@ Dependency list
 ---------------
 
 * Gtk (3.10.8)
-* WebKit (2.4.4)
 * WeasyPrint (0.23)
 * Gobject Introspection for Evince : gir1.2-evince-3.0 (deb package)
 

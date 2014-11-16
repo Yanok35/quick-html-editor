@@ -1,5 +1,6 @@
 import os
 import re
+import subprocess
 import threading
 import time
 from gi.repository import GtkSource, GObject
@@ -8,49 +9,40 @@ TEXT_DEFAULT="""<!DOCTYPE html>
 <html>
  <head>
   <meta charset="utf-8" />
-  <title>Document Title</title>
   <style TYPE="text/css">
     body {
-      background: rgb(204,204,204);
       text-align: justify;
     }
-    page[size="A4"] {
-      background: white;
-      width: 21cm;
-      height: 29.7cm;
-      display: block;
-      margin: 0 auto;
-      margin-bottom: 16px;
-      box-shadow: 0px 0px 8px 2px rgba(0,0,0,0.5);
-    }
-    h1 {
-      //margin-left: 5cm;
+    h1, h2 {
       text-align: center;
     }
-    @page { size: A4; margin: 0cm }
-    @media print {
-      body, page[size="A4"] {
-        background: none;
-        margin: 0 0 0 0;
-        margin-top: 0cm;
-        margin-left: 0cm;
-        margin-right: 0cm;
-        margin-bottom: 0cm;
-        border: 0cm;
-        box-shadow: 0 0 0 0;
-      }
+    h3 {
+      /*margin-left: 5cm;*/
+      page-break-before: always;
+      text-align: left;
+    }
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+    /* layout debug: */
+    div, p {
+        /*border-style: solid;*/
+        border-width: .5pt;
     }
   </style>
  </head>
  <body>
-  <page size="A4">
-  <title> This is the title </title>
-  <h2>Hello World !</h2>
+ <div class="titlepage">
+  <h1>Document title </h1>
+  <h2>Subtitle </h2>
+  <p>Below is an image integration example</p>
   <center><img src='samples/fig1.png' /></center>
-  </page>
-  <page size="A4">
-  <h2>page 2</h2>
-  </page>
+ </div>
+
+ <div>
+  <h3>Section title</h3>
+  <p>Here is a paragraph</p>
  </body>
 </html>
 """
@@ -115,11 +107,11 @@ class htmldoc(GtkSource.Buffer):
 			self.thr_convert_counter = 0
 			outbuf = self.get_content_parsed(self.thr_convert_inputbuf)
 			if True: #if self.thr_convert_counter == 0:
-				self.idle_upgrade_webview(outbuf)
+				self.idle_docpreview_update(outbuf)
 
 	@idle_add_decorator
-	def idle_upgrade_webview(self, content):
-		self.mainwindow.webview_upgrade(content)
+	def idle_docpreview_update(self, content):
+		self.mainwindow.docpreview_update(content)
 
 	def get_content_parsed(self, content=None):
 		if not content:
@@ -129,6 +121,17 @@ class htmldoc(GtkSource.Buffer):
 		filepath_to_check = self.repattern.search(content)
 		if filepath_to_check:
 			content = self.repattern.sub(self._regexp_made_absolute_path, content)
+
+		# Convert to PDF in live
+		proc = subprocess.Popen(['weasyprint',
+				     '-f', 'pdf', '-', '-'],
+		#proc = subprocess.Popen(['prince',
+		#		     '-', '-o', '-'],
+			    stdin=subprocess.PIPE,
+			    stdout=subprocess.PIPE,
+			    )
+
+		content, stderrdata = proc.communicate(content)
 
 		#print(content)
 		return content

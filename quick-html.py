@@ -3,10 +3,12 @@
 import os
 import signal
 from optparse import OptionParser
-from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango, WebKit
+from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango
+
 from libqhe.editorview import *
 from libqhe.htmldoc import *
 from libqhe.docbookdoc import *
+from libqhe.pdfview import *
 
 UI_INFO = """
 <ui>
@@ -78,42 +80,17 @@ class MenuExampleWindow(Gtk.Window):
         toolbar = uimanager.get_widget("/ToolBar")
         box.pack_start(toolbar, False, False, 0)
 
-        #eventbox = Gtk.EventBox()
-        #eventbox.connect("button-press-event", self.on_button_press_event)
-        #box.pack_start(eventbox, True, True, 0)
-        ###vbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        ###vbox.pack_start
-
         self.textbuf = htmldoc(self)
         self.editorview = editorview(self.textbuf)
 
-        self.webView = WebKit.WebView()
-        websettings = self.webView.get_settings()
-        websettings.set_property('enable-file-access-from-file-uris', False)
-        self.webView.set_settings(websettings)
-        self.webView.connect('title-changed', self.on_webview_title_changed)
-
-        #self.webView.load_string(self.textbuf.get_content_parsed(), 'text/html', 'utf-8', 'file://')
-        #self.webView.load_string(TEXT_DEFAULT, 'text/html', 'utf-8', 'file:///home/yannick/python/tst3/')
-        #self.webView.load_html_string(TEXT_DEFAULT, 'file:///home/yannick/python/tst3/')
-        #self.webView.load_uri('file:///home/yannick/python/tst3/doc.html')
-        #self.webView.load_uri('file:///home/yannick/python/a4_pages/index.html')
-        #self.webView.set_editable(True)
-        scrolled_preview = Gtk.ScrolledWindow()
-        scrolled_preview.add(self.webView)
-        self.vadjust = scrolled_preview.get_vadjustment()
-        self.vadjust_latest = 0.0
-        self.vadjust.connect('changed', self.on_vadjust_changed)
+        self.pdfview = pdfview()
 
         paned = Gtk.Paned()
         paned.pack1(self.editorview)
-        paned.pack2(scrolled_preview)
+        paned.pack2(self.pdfview)
         paned.set_position(500)
 
         box.pack_start(paned, True, True, 0)
-
-        #label = Gtk.Label("Right-click to see the popup menu.")
-        #eventbox.add(label)
 
         self.popup = uimanager.get_widget("/PopupMenu")
 
@@ -225,40 +202,14 @@ class MenuExampleWindow(Gtk.Window):
         # 
         destfilename = os.path.join(os.getcwd(), 'export.pdf')
         print ("Preview %s" % destfilename)
-        mainframe = self.webView.get_main_frame()
-        printop = Gtk.PrintOperation()
-        printop.set_property('export-filename', destfilename)
-        #mainframe.print_full(printop, Gtk.PrintOperationAction.EXPORT)
-        #os.system("evince %s" % destfilename)
-        mainframe.print_full(printop, Gtk.PrintOperationAction.PREVIEW)
 
     def on_menu_file_print(self, widget):
-        #
         destfilename = os.path.join(os.getcwd(), 'export.pdf')
-        if 0 == 1:
-            print ("Printing %s" % destfilename)
-            mainframe = self.webView.get_main_frame()
-            printop = Gtk.PrintOperation()
-            printop.set_property('export-filename', destfilename)
-            mainframe.print_full(printop, Gtk.PrintOperationAction.EXPORT)
-            os.system("evince %s" % destfilename)
-        else:
-            import subprocess
-
-           ############################################################################ self.webView.get_html()
-            proc = subprocess.Popen(['weasyprint',
-                                     '--base-url', '"file://"', '-', destfilename],
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            )
-
-            content = self.textbuf.get_content_parsed()
-            proc.stdin.write(content)
-            proc.stdin.close()
-            proc.wait()
-
-        #os.system("evince %s" % destfilename)
-        
+        content = self.textbuf.get_content_parsed()
+        f = open(destfilename, 'w')
+        f.write(content)
+        f.close()
+        print ('%s file saved.' % destfilename)
 
     def on_menu_file_quit(self, widget):
         Gtk.main_quit()
@@ -281,36 +232,8 @@ class MenuExampleWindow(Gtk.Window):
             self.popup.popup(None, None, None, None, event.button, event.time)
             return True # event has been handled
 
-    def on_webview_title_changed(self, webView, frame, title):
-        filename = self.textbuf.get_filename()
-        if not filename:
-            filename = '*scratch*'
-        wintitle = '[%s]' % filename
-        wintitle = "%s %s" % (MAINWIN_TITLE_DEFAULT, wintitle)
-    	if len(title):
-            wintitle = "%s - %s" % (title, wintitle)
-
-        self.set_title(wintitle)
-
-    def webview_upgrade(self, htmlstr):
-        self.webView.load_string(htmlstr,  'text/html', 'utf-8', 'file://')
-
-    def on_vadjust_changed(self, data):
-        # After redrawed, webkit widget go down to 0, and vadjust is returning to top.
-        if self.vadjust.get_value() == 0.0:
-            self.vadjust.set_value(self.vadjust_latest)
-        else:
-            self.vadjust_latest = self.vadjust.get_value()
-        #print('on_vadjust_changed', self.vadjust.get_lower(), self.vadjust.get_value(), self.vadjust.get_upper())
-
-    #def get_preview_slidepos(self):
-    #    high = self.vadjust.get_upper()
-    #    low  = self.vadjust.get_lower()
-    #    delta = float(high - low)
-    #    if delta != 0.0:
-    #        return self.vadjust.get_value() / delta
-    #    else:
-    #        return 0.0
+    def docpreview_update(self, htmlstr):
+        self.pdfview.set_pdfcontent(htmlstr)
 
 def main():
 	parser = OptionParser(version=MAINWIN_TITLE_DEFAULT + " - v%d.%d" % (APP_VERSION_MAJOR, APP_VERSION_MINOR))
