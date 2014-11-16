@@ -123,13 +123,16 @@ class htmldoc(GtkSource.Buffer):
 			content = self.repattern.sub(self._regexp_made_absolute_path, content)
 
 		# Convert to PDF in live
-		proc = subprocess.Popen(['weasyprint',
+		if os.path.exists('/usr/bin/prince'):
+			proc = subprocess.Popen(['prince',
+				     '-', '-o', '-'],
+				    stdin=subprocess.PIPE,
+				    stdout=subprocess.PIPE)
+		else:
+			proc = subprocess.Popen(['weasyprint',
 				     '-f', 'pdf', '-', '-'],
-		#proc = subprocess.Popen(['prince',
-		#		     '-', '-o', '-'],
-			    stdin=subprocess.PIPE,
-			    stdout=subprocess.PIPE,
-			    )
+				    stdin=subprocess.PIPE,
+				    stdout=subprocess.PIPE)
 
 		content, stderrdata = proc.communicate(content)
 
