@@ -51,6 +51,7 @@ Dependency list
 * Gtk (3.10.8)
 * WebKit (2.4.4)
 * WeasyPrint (0.23)
+* Gobject Introspection for Evince : gir1.2-evince-3.0 (deb package)
 
 On debian based system, you can install following system packages:
 	```
