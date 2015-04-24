@@ -13,6 +13,8 @@ class editorview(Gtk.Notebook):
         cssScroll, self.cssview = self._scroll_sourceview_new(cssbuf)
         htmlScroll, self.htmlview = self._scroll_sourceview_new(textbuf)
 
+        self.htmlview.set_justification(Gtk.Justification.FILL)
+
         #self.pack1(cssScroll)
         label = Gtk.Label.new('Content')
         self.append_page(htmlScroll, label)
