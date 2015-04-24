@@ -8,9 +8,10 @@ from optparse import OptionParser
 from gi.repository import GLib, Gtk, GtkSource, Gdk, Pango
 
 from libqhe.editorview import *
-from libqhe.htmldoc import *
 from libqhe.docbookdoc import *
+from libqhe.htmldoc import *
 from libqhe.pdfview import *
+from libqhe.rstdoc import *
 
 UI_INFO = """
 <ui>
@@ -83,7 +84,7 @@ class MenuExampleWindow(Gtk.Window):
         toolbar = uimanager.get_widget("/ToolBar")
         box.pack_start(toolbar, False, False, 0)
 
-        self.textbuf = htmldoc(self)
+        self.textbuf = rstdoc(self)
         self.editorview = editorview(self.textbuf)
 
         self.pdfview = pdfview()
@@ -183,7 +184,7 @@ class MenuExampleWindow(Gtk.Window):
             if ext == '.docbook' or ext == '.xml':
                 self.textbuf = docbookdoc(self)
             else:
-                self.textbuf = htmldoc(self)
+                self.textbuf = rstdoc(self)
             self.editorview.set_buffer(self.textbuf)
             self.textbuf.open_file(filename)
         else:
