@@ -1,3 +1,6 @@
+
+# vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4
+
 import os
 import re
 from lxml import etree
@@ -29,38 +32,38 @@ typesetting. It is possible to do cool stuff with this tool.
 """
 
 class docbookdoc(htmldoc):
-	def __init__(self, mainwindow):
-		super(docbookdoc, self).__init__(mainwindow)
+    def __init__(self, mainwindow):
+        super(docbookdoc, self).__init__(mainwindow)
 
-		xsl_url_html = "/usr/share/xml/docbook/stylesheet/docbook-xsl/html/docbook.xsl"
-		if not os.path.exists(xsl_url_html):
-			xsl_url_html = 'http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl'
+        xsl_url_html = "/usr/share/xml/docbook/stylesheet/docbook-xsl/html/docbook.xsl"
+        if not os.path.exists(xsl_url_html):
+            xsl_url_html = 'http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl'
 
-		self.xsldocbooktranform = etree.XSLT(etree.parse(xsl_url_html))
+        self.xsldocbooktranform = etree.XSLT(etree.parse(xsl_url_html))
 
-	def get_content_parsed(self, content=None):
-		if not content:
-			content = self.get_property('text')
+    def get_content_parsed(self, content=None):
+        if not content:
+            content = self.get_property('text')
 
-		parser = etree.XMLParser(recover=True)
-		try:
-			#root = etree.XML(content, parser, base_url='file://' + os.getcwd())
-			root = etree.XML(content, parser)
+        parser = etree.XMLParser(recover=True)
+        try:
+            #root = etree.XML(content, parser, base_url='file://' + os.getcwd())
+            root = etree.XML(content, parser)
 
-			consume_result = self.xsldocbooktranform(root)
-			out = etree.tostring(consume_result, pretty_print=True)
-			out = super(docbookdoc, self).get_content_parsed(content=out)
-			print (out)
-			return out
-		except:
-			print("exception")
+            consume_result = self.xsldocbooktranform(root)
+            out = etree.tostring(consume_result, pretty_print=True)
+            out = super(docbookdoc, self).get_content_parsed(content=out)
+            print (out)
+            return out
+        except:
+            print("exception")
 
-		return content
+        return content
 
-	def new_file(self, filename):
-		self.begin_not_undoable_action()
-		self.set_text(TEXT_DEFAULT)
-		self.end_not_undoable_action()
+    def new_file(self, filename):
+        self.begin_not_undoable_action()
+        self.set_text(TEXT_DEFAULT)
+        self.end_not_undoable_action()
 
-		self.filename = filename
+        self.filename = filename
 

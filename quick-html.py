@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4
+
 import os
 import signal
 from optparse import OptionParser
@@ -236,42 +238,42 @@ class MenuExampleWindow(Gtk.Window):
         self.pdfview.set_pdfcontent(htmlstr)
 
 def main():
-	parser = OptionParser(version=MAINWIN_TITLE_DEFAULT + " - v%d.%d" % (APP_VERSION_MAJOR, APP_VERSION_MINOR))
-	(options, args) = parser.parse_args()
+    parser = OptionParser(version=MAINWIN_TITLE_DEFAULT + " - v%d.%d" % (APP_VERSION_MAJOR, APP_VERSION_MINOR))
+    (options, args) = parser.parse_args()
 
-	if (len(args) > 0):
-		filename = args[0]
-	else:
-		filename = None
+    if (len(args) > 0):
+        filename = args[0]
+    else:
+        filename = None
 
-	print (options, args)
-	#os._exit(0)
+    print (options, args)
+    #os._exit(0)
 
-	signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
 
-        # Use threads
-        GLib.threads_init()
-        Gdk.threads_init()
+    # Use threads
+    GLib.threads_init()
+    Gdk.threads_init()
 
-	window = MenuExampleWindow()
-	window.set_current_doc(filename)
-	window.resize(1400, 500)
-	window.connect("delete-event", Gtk.main_quit)
-	window.show_all()
+    window = MenuExampleWindow()
+    window.set_current_doc(filename)
+    window.resize(1400, 500)
+    window.connect("delete-event", Gtk.main_quit)
+    window.show_all()
 
-        #thread = threading.Thread(target=app.thr_main)
-        #thread.start()
+    #thread = threading.Thread(target=app.thr_main)
+    #thread.start()
 
-	Gdk.threads_init()
-	Gtk.main()
-	Gdk.threads_leave()
+    Gdk.threads_init()
+    Gtk.main()
+    Gdk.threads_leave()
 
-        #thread.join()
+    #thread.join()
 
 def signal_handler(signal, frame):
-	#print('You pressed Ctrl+C!')
-	Gtk.main_quit()
-	#sys.exit(0)
+    #print('You pressed Ctrl+C!')
+    Gtk.main_quit()
+    #sys.exit(0)
 
 if __name__ == "__main__":
         main()
