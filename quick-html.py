@@ -64,6 +64,7 @@ class MenuExampleWindow(Gtk.Window):
         Gtk.Window.__init__(self, title=MAINWIN_TITLE_DEFAULT)
 
         self.set_default_size(200, 200)
+        self.set_size_request(800, 800)
 
         action_group = Gtk.ActionGroup("my_actions")
 
