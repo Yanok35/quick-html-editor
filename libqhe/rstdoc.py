@@ -37,9 +37,9 @@ class rstdoc(htmldoc):
         self.cssbuf.connect('changed', self.on_cssbuf_changed)
 
         lm = GtkSource.LanguageManager.new()
-        #language = lm.get_language('rest')
-        #self.set_language(language)
-        #self.set_highlight_syntax(True)
+        language = lm.get_language('markdown')
+        self.set_language(language)
+        self.set_highlight_syntax(True)
 
         language = lm.get_language('css')
         self.cssbuf.set_language(language)
@@ -48,8 +48,7 @@ class rstdoc(htmldoc):
         #self.xhtmlparser = etree.XMLParser(recover=True)
         
     def on_cssbuf_changed(self, data):
-        print('oncss')
-        content = self.get_property('text')
+        #content = self.get_property('text')
         self.emit('changed') # propagate 'changed' to main buffer
 
     def get_css_buffer(self):
