@@ -8,12 +8,13 @@ class editorview(Gtk.VPaned):
     def __init__(self, textbuf=None):
         super(editorview, self).__init__()
 
-        cssScroll, self.cssview = self._scroll_sourceview_new(textbuf)
+        #cssScroll, self.cssview = self._scroll_sourceview_new(textbuf)
         htmlScroll, self.htmlview = self._scroll_sourceview_new(textbuf)
 
-        self.pack1(cssScroll)
+        #self.pack1(cssScroll)
         self.pack2(htmlScroll)
-        self.set_position(450/2)
+        #self.set_position(450/2)
+        self.set_position(0)
 
     def _scroll_sourceview_new(self, textbuf):
 
