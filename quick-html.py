@@ -184,9 +184,12 @@ class MenuExampleWindow(Gtk.Window):
             (f, ext) = os.path.splitext(filename)
             if ext == '.docbook' or ext == '.xml':
                 self.textbuf = docbookdoc(self)
+                self.cssbuf = None
             else:
                 self.textbuf = rstdoc(self)
-            self.editorview.set_buffer(self.textbuf)
+                self.cssbuf = self.textbuf.get_css_buffer()
+
+            self.editorview.set_buffer(self.textbuf, self.cssbuf)
             self.textbuf.open_file(filename)
         else:
             self.textbuf.new_file(filename)
