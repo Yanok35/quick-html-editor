@@ -179,7 +179,7 @@ class MenuExampleWindow(Gtk.Window):
         self.add_accel_group(accelgroup)
         return uimanager
 
-    def set_current_doc(self, filename):
+    def set_current_doc(self, filename, cssfile = None):
         if filename and os.path.exists(filename):
             (f, ext) = os.path.splitext(filename)
             if ext == '.docbook' or ext == '.xml':
@@ -188,6 +188,14 @@ class MenuExampleWindow(Gtk.Window):
             else:
                 self.textbuf = rstdoc(self)
                 self.cssbuf = self.textbuf.get_css_buffer()
+
+                # Hack for CSS file opening :
+                if not (cssfile and os.path.exists(cssfile)):
+                    print ("css file not found")
+                else:
+                    f = open(cssfile, 'r')
+                    self.cssbuf.set_text(f.read())
+                    f.close()
 
             self.editorview.set_buffer(self.textbuf, self.cssbuf)
             self.textbuf.open_file(filename)
@@ -252,6 +260,10 @@ def main():
     else:
         filename = None
 
+    if (len(args) > 1):
+        cssfile = args[1]
+    else:
+        cssfile = None
     print (options, args)
     #os._exit(0)
 
@@ -262,7 +274,7 @@ def main():
     Gdk.threads_init()
 
     window = MenuExampleWindow()
-    window.set_current_doc(filename)
+    window.set_current_doc(filename, cssfile)
     window.resize(1400, 500)
     window.connect("delete-event", Gtk.main_quit)
     window.show_all()
