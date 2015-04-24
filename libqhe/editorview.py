@@ -28,7 +28,7 @@ class editorview(Gtk.Notebook):
             sourceview = GtkSource.View()
         sourceview.set_show_line_numbers(True)
         sourceview.set_highlight_current_line(True)
-        #sourceview.set_wrap_mode(True)
+        sourceview.set_wrap_mode(Gtk.WrapMode.WORD)
         fontdesc = Pango.FontDescription("Monospace 11")
         sourceview.modify_font(fontdesc)
         scroll = Gtk.ScrolledWindow()
