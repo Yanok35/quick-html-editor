@@ -85,7 +85,8 @@ class MenuExampleWindow(Gtk.Window):
         box.pack_start(toolbar, False, False, 0)
 
         self.textbuf = rstdoc(self)
-        self.editorview = editorview(self.textbuf)
+        self.cssbuf = self.textbuf.get_css_buffer()
+        self.editorview = editorview(self.textbuf, self.cssbuf)
 
         self.pdfview = pdfview()
 
