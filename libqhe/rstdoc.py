@@ -103,3 +103,32 @@ class rstdoc(htmldoc):
 
         self.filename = filename
 
+    def open_file(self, filename, cssfile):
+        if not (cssfile and os.path.exists(cssfile)):
+            print ("css file not found")
+            return
+
+        f = open(cssfile, 'r')
+        self.cssbuf.begin_not_undoable_action()
+        self.cssbuf.set_text(f.read())
+        self.cssbuf.end_not_undoable_action()
+        f.close()
+
+        self.cssbuf_filename = cssfile
+
+        return super(rstdoc, self).open_file(filename)
+
+    def save_file(self):
+        if not self.cssbuf_filename:
+            print ("filename not set")
+        elif not os.path.exists(self.cssbuf_filename) or self.cssbuf.can_undo():
+            f = open(self.cssbuf_filename, 'w')
+            f.write(self.cssbuf.get_property('text'))
+            f.close()
+
+            self.cssbuf.set_undo_manager(None)
+        #else:
+        #    print ("no change detected")
+
+        # Ask super class to save the main buffer
+        return super(rstdoc, self).save_file()

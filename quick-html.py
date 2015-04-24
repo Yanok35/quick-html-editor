@@ -189,16 +189,8 @@ class MenuExampleWindow(Gtk.Window):
                 self.textbuf = rstdoc(self)
                 self.cssbuf = self.textbuf.get_css_buffer()
 
-                # Hack for CSS file opening :
-                if not (cssfile and os.path.exists(cssfile)):
-                    print ("css file not found")
-                else:
-                    f = open(cssfile, 'r')
-                    self.cssbuf.set_text(f.read())
-                    f.close()
-
             self.editorview.set_buffer(self.textbuf, self.cssbuf)
-            self.textbuf.open_file(filename)
+            self.textbuf.open_file(filename, cssfile)
         else:
             self.textbuf.new_file(filename)
 
