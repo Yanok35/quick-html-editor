@@ -46,16 +46,16 @@ class pdfview(Gtk.ScrolledWindow):
         stream = Gio.MemoryInputStream.new_from_bytes(bytes)
 
         # The following optimization made the apps to crash sometimes...
-        #if self.model:
-        #    doc = self.model.get_document()
-        #    nb_before = doc.get_n_pages()
-        #    doc.load_stream(stream,
-        #        EvinceDocument.DocumentLoadFlags.NONE,
-        #        None)
-        #    nb_after = doc.get_n_pages()
-        #    if nb_after == nb_before:
-        #        self.view.reload()
-        #        return
+        if self.model:
+            doc = self.model.get_document()
+            nb_before = doc.get_n_pages()
+            doc.load_stream(stream,
+                EvinceDocument.DocumentLoadFlags.NONE,
+                None)
+            nb_after = doc.get_n_pages()
+            if nb_after == nb_before:
+                self.view.reload()
+                return
 
         # We enter here the first time to create the Document Model
         #  and also when the total number of pages has changed
